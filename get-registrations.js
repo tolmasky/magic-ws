@@ -14,15 +14,15 @@ module.exports = function getRegistrations(targetNodeVersion, packageDescription
                 return registrations;
 
             var description = packageDescriptions[name];
-            var packagePath = path.dirname(description.path);
-            var options = getPresetOptions(targetNodeVersion, description.path);
+            var fullPath = description.path;
+            var options = getPresetOptions(targetNodeVersion, description.packagePath);
             var key = JSON.stringify(options);
             var babelOptions = { presets: [ [presetPath, options ] ] };
 
             if (!registrations[key])
-                registrations[key] = { sources: [packagePath], options: babelOptions };
+                registrations[key] = { sources: [fullPath], options: babelOptions };
             else
-                registrations[key].sources.push(packagePath);
+                registrations[key].sources.push(fullPath);
 
             return registrations;
         }, Object.create(null));

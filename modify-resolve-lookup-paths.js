@@ -1,6 +1,10 @@
 var Module = require("module");
 var oldResolveLookupPaths = Module._resolveLookupPaths;
 
+var fs = require("fs");
+var path = require("path");
+var spawnSync = require("child_process").spawnSync;
+
 
 // We are modifying the lookup paths to behave as such:
 // 0th:             [WORKSPACE] - These are overriden packages.
@@ -8,19 +12,89 @@ var oldResolveLookupPaths = Module._resolveLookupPaths;
 // Nth:             [resolveLookupPaths(root)] - These are simulated peer dependencies.
 
 // FIXME: Should we *only* climb into known packages?
-module.exports = function modifyResolveLookupPaths(workspace, rootPath)
+module.exports = function modifyResolveLookupPaths(workspace, rootPath, packages)
 {
+    var mappings = getPackageMappings(packages);
     var root = { id:"///", paths: Module._nodeModulePaths(rootPath) };
-
+console.log(mappings);
     Module._resolveLookupPaths = function(request, parent, newReturn)
     {
         var result = oldResolveLookupPaths.apply(this, arguments);
-        var rootResult = parent === root ? [] : 
+        var firstCharacter = request.charAt(0);
+
+        if (firstCharacter === "/" ||
+            request.substr(0, 2) === "./" ||
+            request.substr(0, 3) === "../")
+            return result;
+
+        var pathComponents = request.split(path.sep);
+        var name = firstCharacter === "@" ?
+            path.join(pathComponents[0], pathComponents[1]) :
+            pathComponents[0];
+
+        var mapping = mappings[name];
+        var workspaceResult = mapping ? [mapping.path] : [];
+        var rootResult = parent === root ? [] :
             oldResolveLookupPaths.apply(this, [request, root, newReturn]);
 
         if (newReturn)
-            return [workspace].concat(result || []).concat(rootResult);
+            return workspaceResult.concat(result || []).concat(rootResult);
 
-        return [result[0], [workspace].concat(result[1]).concat(rootResult)];
+        return [result[0], workspaceResult.concat(result[1]).concat(rootResult[1])];
     }
+}
+
+function getPackageMappings(descriptions)
+{
+    return Object.keys(descriptions)
+        .map(function (name)
+        {
+            var description = descriptions[name];
+            var fullPath = description.path;
+    
+            var ending = "/" + name;
+            var namedCorrectly = fullPath.substr(fullPath.length - ending.length) === ending;
+            var scoped = description.scoped;
+
+            if (namedCorrectly)
+                return { name: name, path: getSearchPath(fullPath, scoped) };
+
+            var checksum = getChecksum(description);
+            var tmpPath = path.join(
+                "/tmp/petrified-links/",
+                checksum,
+                (scoped ? path.dirname(name) : ""));
+ 
+            spawnSync("mkdir", ["-p", tmpPath], { stdio: [0, 1, 2] });
+    
+            var linkPath = path.join(tmpPath, path.basename(name));
+
+            if (!fs.existsSync(linkPath))
+                fs.symlinkSync(fullPath, linkPath, "dir");
+
+            return { name: name, path: getSearchPath(linkPath, scoped) };
+        })
+        .reduce(function (mappings, description)
+        {
+            mappings[description.name] = description;
+            
+            return mappings;
+        }, Object.create(null));
+}
+
+function getSearchPath(fullPath, scoped)
+{
+    if (scoped)
+        return path.dirname(path.dirname(fullPath));
+
+    return path.dirname(fullPath);
+}
+
+function getChecksum(mapping)
+{
+    return require("crypto")
+        .createHash("sha512")
+        .update(JSON.stringify(mapping))
+        .digest("base64")
+        .replace(/\//g, "_");
 }

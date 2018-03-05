@@ -13,31 +13,29 @@ module.exports = function getPackageDescriptions(source)
         }, Object.create(null));
 }
 
-function getPackageDescriptionsAsArray(source, mayContainScopedPackages, prefix)
+function getPackageDescriptionsAsArray(source, mayContainPackages)
 {
     var children = fs.readdirSync(source)
-        .map(function (name)
+        .map(function (filename)
         {
-            if (name.charAt(0) === ".")
+            if (filename.charAt(0) === ".")
                 return [];
 
-            var fullPath = path.join(source, name);
+            var fullPath = path.join(source, filename);
+            var packagePath = path.join(fullPath, "package.json");
 
-            if (name.charAt(0) !== "@")
+            try { var name = require(packagePath).name; }
+            catch (e)
             {
-                var name = prefix ? prefix + "/" + name : name;
-                var packagePath = path.join(fullPath, "package.json");
+                if (!mayContainPackages)
+                    return [];
 
-                try { fs.statSync(packagePath) }
-                catch (e) { return []; }
-
-                return { name: name, path: packagePath };
+                return getPackageDescriptionsAsArray(fullPath, false);
             }
 
-            if (!mayContainScopedPackages)
-                return [];
+            var scoped = name.charAt(0) === "@";
 
-            return getPackageDescriptionsAsArray(fullPath, false, name);
+            return { scoped: scoped, name: name, path: fullPath, packagePath: packagePath };
         });
 
     return [].concat.apply([], children);
