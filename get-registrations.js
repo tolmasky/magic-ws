@@ -10,7 +10,7 @@ module.exports = function getRegistrations(targetNodeVersion, packageDescription
         .reduce(function toRegistrations(registrations, name)
         {
             // Easier to just always skip this for now.
-            if (name === "@isomorphic/preset" || name === "generic-jsx")
+            if (name === "@isomorphic/babel-preset" || name === "generic-jsx")
                 return registrations;
 
             var description = packageDescriptions[name];

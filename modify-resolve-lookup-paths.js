@@ -1,6 +1,6 @@
 var Module = require("module");
 var oldResolveLookupPaths = Module._resolveLookupPaths;
-var diranme = require("path");
+
 
 // We are modifying the lookup paths to behave as such:
 // 0th:             [WORKSPACE] - These are overriden packages.

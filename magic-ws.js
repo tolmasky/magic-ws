@@ -24,8 +24,6 @@ require("./modify-resolve-lookup-paths")(workspace, absoluteEntrypoint);
 
 if (options.babel)
 {
-    require("@isomorphic/babel-preset");
-
     var presetPath = require.resolve("@isomorphic/babel-preset");
     var node = process.versions.node;
     var registrations = require("./get-registrations")(node, packages, presetPath);
