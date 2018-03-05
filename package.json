@@ -1,0 +1,16 @@
+{
+  "name": "magic-ws",
+  "version": "1.0.0",
+  "description": "Magic Workspace allows you to treat packages in a folder as in node_modules, and automatically babel-registers.",
+  "main": "magic-ws.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "commander": "^2.14.1"
+  }
+}
