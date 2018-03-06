@@ -1,10 +1,10 @@
 # Magic Workspaces
 
-Magic Workspaces are kind of like [Yarn Workspaces](https://yarnpkg.com/lang/en/docs/workspaces/)
-or [Lerna](https://github.com/lerna/lerna) but completely **dynamic** and **configuration-free**.
-They're great if you've ever had to link in a package you're actively editing, swap in testing mocks,
-and much more. Chances are at some point you'e been frustrated with some aspect of node's module system
-during development, and Magic Workspaces may have very well been able to bail you out!
+Magic Workspaces are a **dynamic** and **configuration-free** way of easily linking packages together.
+Chances are at some point you've been frustrated with some aspect of node's module system during
+development that Magic Workspaces could have solved. They're great if you've ever had to link in a
+package you're actively editing, swap in testing mocks, and much more. You can think of Magic Workspaces
+as [Lerna Workspaces](https://github.com/lerna/lerna) for code that's not in your mono repo.
 
 ## Getting Started
 
@@ -42,7 +42,7 @@ $ magic-ws -p /path/to/buggy-package node my-app
 
 ## Solve the annoying requiring yourself conundrum when testing
 
-Yup, you can just "hot-swap" in yourself so that tests can just do require("my-package") instead of
+Yup, you can just "hot-swap" in yourself so that tests can just do `require("my-package")` instead of
 `require("../../..")`. You can make things even easier by putting `magic-ws tests/` straight into
 your `package.json` so `npm test` just works.
 
