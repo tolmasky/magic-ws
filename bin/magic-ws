@@ -1,26 +1,44 @@
 #!/bin/sh
 
-# readlink -f doesn't exist on Mac, so we need our own realpath implementation.
-. ./realpath.sh
+MAGIC_WS_PATH="$_"
 
-# Absolute path to this script.
-MAGIC_WS_PATH=$(realpath "$0")
+magic_ws_has() {
+  type "${1-}" > /dev/null 2>&1
+}
 
-# Absolute path this script is in
-MAGIC_WS_PARENT_PATH=$(dirname "$MAGIC_WS_PATH")
+# Make zsh glob matching behave same as bash
+# This fixes the "zsh: no matches found" errors
+if [ -z "${MAGIC_WS_CD_FLAGS-}" ]; then
+  export MAGIC_WS_CD_FLAGS=''
+fi
+if magic_ws_has "unsetopt"; then
+  unsetopt nomatch 2>/dev/null
+  MAGIC_WS_CD_FLAGS="-q"
+fi
+
+# Auto detect the MAGIC_WS_DIR when not set
+if [ -z "${MAGIC_WS_DIR-}" ]; then
+  # shellcheck disable=SC2128
+  if [ -n "${BASH_SOURCE-}" ]; then
+    # shellcheck disable=SC2169
+    MAGIC_WS_PATH="${BASH_SOURCE[0]}"
+  fi
+  # shellcheck disable=SC1001
+  MAGIC_WS_DIR="$(cd ${MAGIC_WS_CD_FLAGS} "$(dirname "${MAGIC_WS_PATH:-$0}")" > /dev/null && \pwd)"
+  export MAGIC_WS_DIR
+fi
+unset MAGIC_WS_PATH 2> /dev/null
 
 # SEARCH_PATH is where our node lives.
-MAGIC_WS_NODE_SEARCH_PATH=${MAGIC_WS_PARENT_PATH}/helpers
+MAGIC_WS_NODE_SEARCH_PATH=${MAGIC_WS_DIR}/helpers
 
 # BOOTSTRAP_PATH
-MAGIC_WS_BOOTSTRAP_PATH=$(dirname "$MAGIC_WS_PARENT_PATH")/magic-ws-2.js
+MAGIC_WS_BOOTSTRAP_PATH=$(dirname "$MAGIC_WS_DIR")/magic-ws-2.js
 
 export MAGIC_WS_BOOTSTRAP_PATH
 
-if ! [    `echo ${PATH} | grep -c :${MAGIC_WS_NODE_SEARCH_PATH}: ` -ge 1 -o `echo ${PATH} | grep -c ^${MAGIC_WS_NODE_SEARCH_PATH}: ` -ge 1 -o `echo ${PATH} | grep -c :${MAGIC_WS_NODE_SEARCH_PATH}$ ` -ge 1  ] ; then
-    MAGIC_WS_REAL_NODE=`which node` export MAGIC_WS_REAL_NODE
-    PATH=${MAGIC_WS_NODE_SEARCH_PATH}:${PATH}
-fi
+MAGIC_WS_REAL_NODE=`which node` export MAGIC_WS_REAL_NODE
+PATH=${MAGIC_WS_NODE_SEARCH_PATH}:${PATH} export PATH
 
 MAGIC_WS_BOOTSTRAP_ARGS=""
 
@@ -49,8 +67,5 @@ while (( "$#" )); do
 done
 
 export MAGIC_WS_BOOTSTRAP_ARGS
-
-echo $MAGIC_WS_REAL_NODE
-echo $MAGIC_WS_NODE_SEARCH_PATH
 
 $@

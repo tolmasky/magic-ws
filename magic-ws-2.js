@@ -1,6 +1,6 @@
 var path = require("path");
 var bootstrapArgv = getBootstrappedArgv();
-console.log(process.argv);
+
 var options = require("commander")
     .usage("magic-ws [commands]")
     .option("-w, --workspace [workspace]", "Workspace location", collect, [])
