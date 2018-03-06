@@ -15,6 +15,14 @@ var descriptions = require("./get-package-descriptions")(packages);
 
 require("./modify-resolve-lookup-paths")(descriptions);
 
+if (true)
+{
+    var presetPath = require.resolve("@isomorphic/babel-preset");
+    var node = process.versions.node;
+    var registrations = require("./get-registrations")(node, descriptions, presetPath);
+
+    require("./babel-register")(registrations);
+}
 
 function collect(val, memo)
 {

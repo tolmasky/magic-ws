@@ -33,9 +33,9 @@ module.exports = function modifyResolveLookupPaths(packages)
 
         var mapping = mappings[name];
         var workspaceResult = mapping ? [mapping.path] : [];
-        var rootResult = !require.main ? [] :
-            parent === require.main ? [] :
-            oldResolveLookupPaths.apply(this, [request, require.main.filename, newReturn]);
+        var rootResult = !process.mainModule ? [] :
+            parent === process.mainModule ? [] :
+            oldResolveLookupPaths.apply(this, [request, process.mainModule, newReturn]);
 
         if (newReturn)
             return workspaceResult.concat(result || []).concat(rootResult);
