@@ -1,5 +1,6 @@
 var path = require("path");
 var bootstrapArgv = getBootstrappedArgv();
+var getPackageDescriptions = require("./get-package-descriptions");
 
 var options = require("commander")
     .usage("magic-ws [commands]")
@@ -9,9 +10,9 @@ var options = require("commander")
     .parse(getBootstrappedArgv());
 
 var cwd = process.cwd();
-var packages = options.workspace.concat(options.package)
-    .map(function (relative) { return path.resolve(cwd, relative) });
-var descriptions = require("./get-package-descriptions")(packages);
+var workspaces = options.workspace;
+var packages = options.package;
+var descriptions = getPackageDescriptions(workspaces, packages);
 
 require("./modify-resolve-lookup-paths")(descriptions);
 
@@ -22,6 +23,11 @@ if (options.babel)
     var registrations = require("./get-registrations")(node, descriptions, presetPath);
 
     require("./babel-register")(registrations);
+}
+
+function resolve(relative)
+{
+    return path.resolve(cwd, relative);
 }
 
 function collect(val, memo)

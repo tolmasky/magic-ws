@@ -46,17 +46,20 @@ while (( "$#" )); do
 
     if [ $1 = "-p" -o $1 = "--package" -o $1 = "-w" -o $1 = "--workspace" ]; then
 
-        ARG_LENGTH=`expr "$1" : ".*"`
+        STRING_LENGTH=`expr //"$1" : ".*"`
+        ARG_LENGTH=`expr ${STRING_LENGTH} - 2`
         MAGIC_WS_BOOTSTRAP_ARGS="$MAGIC_WS_BOOTSTRAP_ARGS$ARG_LENGTH;$1"
         shift
 
-        ARG_LENGTH=`expr "$1" : ".*"`
+        STRING_LENGTH=`expr //"$1" : ".*"`
+        ARG_LENGTH=`expr ${STRING_LENGTH} - 2`
         MAGIC_WS_BOOTSTRAP_ARGS="$MAGIC_WS_BOOTSTRAP_ARGS$ARG_LENGTH;$1"
         shift
 
     elif [ $1 = "-b" -o $1 = "--babel" ]; then
 
-        ARG_LENGTH=`expr "$1" : ".*"`
+        STRING_LENGTH=`expr //"$1" : ".*"`
+        ARG_LENGTH=`expr ${STRING_LENGTH} - 2`
         MAGIC_WS_BOOTSTRAP_ARGS="$MAGIC_WS_BOOTSTRAP_ARGS$ARG_LENGTH;$1"
         shift
     

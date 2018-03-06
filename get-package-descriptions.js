@@ -1,14 +1,22 @@
 var fs = require("fs");
 var path = require("path");
+var cwd = process.cwd();
+var globSync = require("fast-glob").sync;
+var isGlob = require("is-glob");
 
 
-module.exports = function getPackageDescriptions(sources)
+module.exports = function getPackageDescriptions(workspaces, packages)
 {
-    return [].concat.apply([],
-        sources.map(function (source)
-        {
-            return getPackageDescriptionsAsArray(source, true)
-        }))
+    var fromWorkspaces = pipe(
+        flatMap(glob(false)),
+        flatMap(readdir),
+        flatMap(getPackageDescription(true)))(workspaces);
+    var fromPackages = pipe(
+        flatMap(glob(true)),
+        flatMap(getPackageDescription(false)))(packages);
+
+    return fromWorkspaces
+        .concat(fromPackages)
         .reduce(function (descriptions, description)
         {
             descriptions[description.name] = description;
@@ -17,37 +25,94 @@ module.exports = function getPackageDescriptions(sources)
         }, Object.create(null));
 }
 
-function getPackageDescriptionsAsArray(source, mayContainPackages)
+function pipe()
 {
-    var children = fs.readdirSync(source)
-        .map(function (filename)
-        {
-            if (filename.charAt(0) === ".")
-                return [];
+    var fs = arguments;
 
-            var fullPath = path.join(source, filename);
-            
-            if (!fs.statSync(fullPath).isDirectory())
-                return [];
+    return function pipe(input)
+    {
+        var index = 0;
+        var count = fs.length;
+        
+        for (; index < count; ++index)
+            input = fs[index](input);
 
-            var packagePath = path.join(fullPath, "package.json");
-            var name = void(0);
+        return input;
+    }
+}
 
-            try { var name = require(packagePath).name; }
-            catch (e) { }
+function flatMap(f)
+{
+    return function (array)
+    {
+        return [].concat.apply([], array.map(f));
+    }
+}
 
-            if (typeof name === "undefined")
+function readdir(directory)
+{
+    return fs.readdirSync(directory).map(function (filename)
+    {
+        return path.join(directory, filename);
+    });
+}
+
+function glob(justPackages)
+{
+    return function (pattern)
+    {
+        if (!isGlob(pattern))
+            return [path.resolve(cwd, pattern)];
+
+        var options = { absolute: true, onlyDirectories: true };
+        var results = globSync(pattern, options);
+
+        if (!justPackages)
+            return results;
+
+        return results
+            .filter(function (path)
             {
-                if (!mayContainPackages)
-                        return [];
+                return getPackageName(path) !== void(0);
+            });
+    }
+}
 
-                return getPackageDescriptionsAsArray(fullPath, false);
-            }
+function getPackageDescription(ignoreNonPackage)
+{
+    return function (fullPath)
+    {
+        if (path.basename(fullPath).charAt(0) === ".")
+            return nothingOrThrow(ignoreNonPackage, fullPath);
 
-            var scoped = name.charAt(0) === "@";
+        if (!fs.statSync(fullPath).isDirectory())
+            return nothingOrThrow(ignoreNonPackage, fullPath);
 
-            return { scoped: scoped, name: name, path: fullPath, packagePath: packagePath };
-        });
+        var packagePath = path.join(fullPath, "package.json");
+        var name = getPackageName(fullPath);
 
-    return [].concat.apply([], children);
+        if (typeof name === "undefined")
+            return nothingOrThrow(ignoreNonPackage, fullPath);
+
+        var scoped = name.charAt(0) === "@";
+
+        return { scoped: scoped, name: name, path: fullPath, packagePath: packagePath };
+    };
+}
+
+function getPackageName(fullPath)
+{
+    try
+    {
+        return require(path.join(fullPath, "package.json")).name;
+    }
+    catch (e) { }
+}
+
+function nothingOrThrow(ignore, path)
+{
+    if (ignore)
+        return [];
+
+    throw new Error(path + " is not a valid node package.");
 }
