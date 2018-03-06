@@ -2,9 +2,13 @@ var fs = require("fs");
 var path = require("path");
 
 
-module.exports = function getPackageDescriptions(source)
+module.exports = function getPackageDescriptions(sources)
 {
-    return getPackageDescriptionsAsArray(source, true)
+    return [].concat.apply([],
+        sources.map(function (source)
+        {
+            return getPackageDescriptionsAsArray(source, true)
+        }))
         .reduce(function (descriptions, description)
         {
             descriptions[description.name] = description;
@@ -22,13 +26,20 @@ function getPackageDescriptionsAsArray(source, mayContainPackages)
                 return [];
 
             var fullPath = path.join(source, filename);
+            
+            if (!fs.statSync(fullPath).isDirectory())
+                return [];
+
             var packagePath = path.join(fullPath, "package.json");
+            var name = void(0);
 
             try { var name = require(packagePath).name; }
-            catch (e)
+            catch (e) { }
+
+            if (typeof name === "undefined")
             {
                 if (!mayContainPackages)
-                    return [];
+                        return [];
 
                 return getPackageDescriptionsAsArray(fullPath, false);
             }

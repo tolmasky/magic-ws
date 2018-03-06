@@ -1,11 +1,45 @@
 var path = require("path");
-
+var bootstrapArgv = getBootstrappedArgv();
+console.log(process.argv);
 var options = require("commander")
     .usage("magic-ws [commands]")
-    .option("-w, --workspace [workspace]", "Workspace location")
+    .option("-w, --workspace [workspace]", "Workspace location", collect, [])
+    .option("-p, --package [package]", "Package location", collect, [])
     .option("--no-babel", "Turn off automatic Babel transpilation")
-    .parse(process.argv);
+    .parse(getBootstrappedArgv());
 
+var cwd = process.cwd();
+var packages = options.workspace.concat(options.package)
+    .map(function (relative) { return path.resolve(cwd, relative) });
+var descriptions = require("./get-package-descriptions")(packages);
+
+require("./modify-resolve-lookup-paths")(descriptions);
+
+
+function collect(val, memo)
+{
+    memo.push(val);
+    return memo;
+}
+
+function getBootstrappedArgv()
+{
+    var bootstrapArgs = process.env["MAGIC_WS_BOOTSTRAP_ARGS"];
+    var bootstrapArgv = [process.argv0, __filename];
+    var index = 0;
+
+    while (index < bootstrapArgs.length)
+    {
+        var semicolon = bootstrapArgs.indexOf(";", index);
+        var length = +bootstrapArgs.substring(index, semicolon);
+    
+        bootstrapArgv.push(bootstrapArgs.substr(semicolon + 1, length));
+        index = semicolon + length + 1;
+    }
+    
+    return bootstrapArgv;
+}
+/*
 var cwd = process.cwd();
 var workspace = path.resolve(cwd, options.workspace || ".");
 var packages = require("./get-package-descriptions")(workspace);
@@ -55,4 +89,4 @@ if (options.babel)
     require("./babel-register")(registrations);
 }
 
-require(absoluteEntrypoint);
+require(absoluteEntrypoint);*/

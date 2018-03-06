@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# readlink -f doesn't exist on Mac, so we need our own realpath implementation.
+. ./realpath.sh
+
+# Absolute path to this script.
+MAGIC_WS_PATH=$(realpath "$0")
+
+# Absolute path this script is in
+MAGIC_WS_PARENT_PATH=$(dirname "$MAGIC_WS_PATH")
+
+# SEARCH_PATH is where our node lives.
+MAGIC_WS_NODE_SEARCH_PATH=${MAGIC_WS_PARENT_PATH}/helpers
+
+# BOOTSTRAP_PATH
+MAGIC_WS_BOOTSTRAP_PATH=$(dirname "$MAGIC_WS_PARENT_PATH")/magic-ws-2.js
+
+export MAGIC_WS_BOOTSTRAP_PATH
+
+if ! [    `echo ${PATH} | grep -c :${MAGIC_WS_NODE_SEARCH_PATH}: ` -ge 1 -o `echo ${PATH} | grep -c ^${MAGIC_WS_NODE_SEARCH_PATH}: ` -ge 1 -o `echo ${PATH} | grep -c :${MAGIC_WS_NODE_SEARCH_PATH}$ ` -ge 1  ] ; then
+    MAGIC_WS_REAL_NODE=`which node` export MAGIC_WS_REAL_NODE
+    PATH=${MAGIC_WS_NODE_SEARCH_PATH}:${PATH}
+fi
+
+MAGIC_WS_BOOTSTRAP_ARGS=""
+
+while (( "$#" )); do
+
+    if [ $1 = "-p" -o $1 = "--package" -o $1 = "-w" -o $1 = "--workspace" ]; then
+
+        ARG_LENGTH=`expr "$1" : ".*"`
+        MAGIC_WS_BOOTSTRAP_ARGS="$MAGIC_WS_BOOTSTRAP_ARGS$ARG_LENGTH;$1"
+        shift
+
+        ARG_LENGTH=`expr "$1" : ".*"`
+        MAGIC_WS_BOOTSTRAP_ARGS="$MAGIC_WS_BOOTSTRAP_ARGS$ARG_LENGTH;$1"
+        shift
+    else
+        break;
+    fi
+done
+
+export MAGIC_WS_BOOTSTRAP_ARGS
+
+echo $MAGIC_WS_REAL_NODE
+echo $MAGIC_WS_NODE_SEARCH_PATH
+
+$@
