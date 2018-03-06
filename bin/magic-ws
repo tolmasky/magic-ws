@@ -35,7 +35,15 @@ while (( "$#" )); do
         ARG_LENGTH=`expr "$1" : ".*"`
         MAGIC_WS_BOOTSTRAP_ARGS="$MAGIC_WS_BOOTSTRAP_ARGS$ARG_LENGTH;$1"
         shift
+
+    elif [ $1 = "-b" -o $1 = "--babel" ]; then
+
+        ARG_LENGTH=`expr "$1" : ".*"`
+        MAGIC_WS_BOOTSTRAP_ARGS="$MAGIC_WS_BOOTSTRAP_ARGS$ARG_LENGTH;$1"
+        shift
+    
     else
+
         break;
     fi
 done

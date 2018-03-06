@@ -5,7 +5,7 @@ var options = require("commander")
     .usage("magic-ws [commands]")
     .option("-w, --workspace [workspace]", "Workspace location", collect, [])
     .option("-p, --package [package]", "Package location", collect, [])
-    .option("--no-babel", "Turn off automatic Babel transpilation")
+    .option("-b, --babel", "Turn on automatic Babel transpilation")
     .parse(getBootstrappedArgv());
 
 var cwd = process.cwd();
@@ -15,7 +15,7 @@ var descriptions = require("./get-package-descriptions")(packages);
 
 require("./modify-resolve-lookup-paths")(descriptions);
 
-if (true)
+if (options.babel)
 {
     var presetPath = require.resolve("@isomorphic/babel-preset");
     var node = process.versions.node;
