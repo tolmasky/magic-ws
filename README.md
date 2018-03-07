@@ -94,7 +94,7 @@ in tandem with Lerna (like in the multiple workspaces example above).
 
 `magic-ws` is very robust since it forms something akin to a virtual environment where these hot-swaps happen.
 This means you can run **any** script that eventually calls into node and the swapping will still work (that's
-why the `npm` example above worked). Additionally, if the node process `exec`s, `spawn`s, and `fork`s, those
+why the `npm` example above worked). Additionally, if the node process `exec`s, `spawn`s, or `fork`s, those
 too will keep the hot-swaps. Again, all this happens without actually mutating your code, so you could for
 example run your code's test suite normally and with `magic-ws` in parallel.
 

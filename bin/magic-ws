@@ -23,8 +23,18 @@ if [ -z "${MAGIC_WS_DIR-}" ]; then
     # shellcheck disable=SC2169
     MAGIC_WS_PATH="${BASH_SOURCE[0]}"
   fi
-  # shellcheck disable=SC1001
-  MAGIC_WS_DIR="$(cd ${MAGIC_WS_CD_FLAGS} "$(dirname "${MAGIC_WS_PATH:-$0}")" > /dev/null && \pwd)"
+
+  if [ -L ${MAGIC_WS_PATH:-$0} ]; then
+      TEMP_DIR=$(pwd)
+      cd $(dirname "${MAGIC_WS_PATH:-$0}")
+      cd $(dirname `readlink ${MAGIC_WS_PATH:-$0}`)
+      MAGIC_WS_DIR=$(pwd -P)
+      cd $TEMP_DIR
+      unset TEMP_DIR
+  else
+      # shellcheck disable=SC1001
+      MAGIC_WS_DIR="$(cd ${MAGIC_WS_CD_FLAGS} "$(dirname "${MAGIC_WS_PATH:-$0}")" > /dev/null && \pwd)"
+  fi
   export MAGIC_WS_DIR
 fi
 unset MAGIC_WS_PATH 2> /dev/null
@@ -62,7 +72,7 @@ while (( "$#" )); do
         ARG_LENGTH=`expr ${STRING_LENGTH} - 2`
         MAGIC_WS_BOOTSTRAP_ARGS="$MAGIC_WS_BOOTSTRAP_ARGS$ARG_LENGTH;$1"
         shift
-    
+
     else
 
         break;
