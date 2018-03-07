@@ -62,7 +62,7 @@ Say you have a bunch of mock modules you regularly use for testing. Instead of i
 manually, you could just swap them in so that the code can remain agnostic:
 
 ```bash
-$ magic-ws -p ./tests/mocks/* npm test
+$ magic-ws -p "./tests/mocks/*" npm test
 ```
 
 Now every package in `./test/mocks/` will be used in place of the real ones. Just make sure their names
