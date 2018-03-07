@@ -1,5 +1,4 @@
 var path = require("path");
-var bootstrapArgv = getBootstrappedArgv();
 var getPackageDescriptions = require("./get-package-descriptions");
 
 var options = require("commander")
@@ -18,11 +17,18 @@ require("./modify-resolve-lookup-paths")(descriptions);
 
 if (options.babel)
 {
-    var presetPath = require.resolve("@isomorphic/babel-preset");
-    var node = process.versions.node;
-    var registrations = require("./get-registrations")(node, descriptions, presetPath);
+    try
+    {
+        var presetPath = require.resolve("@isomorphic/babel-preset");
+        var node = process.versions.node;
+        var registrations = require("./get-registrations")(node, descriptions, presetPath);
 
-    require("./babel-register")(registrations);
+        require("./babel-register")(registrations);
+    }
+    catch (e)
+    {
+        throw new Error("--babel is not yet supported.");
+    }
 }
 
 function resolve(relative)
