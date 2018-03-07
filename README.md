@@ -8,37 +8,39 @@ as [Lerna Workspaces](https://github.com/lerna/lerna) for code that's not in you
 
 ## Getting Started
 
-You can grab `magic-ws` from npm:
+You can grab `magic-ws` from npm. Make sure to install it globally:
 
 ```bash
 $ npm install magic-ws -g
 ```
 
-The fundamental primitive in `magic-ws` is the package hot-swap:
+The fundamental primitive in `magic-ws` is the package hot-swap (`-p`):
 
 ```bash
-$ magic-ws -p /path/to/my-package node my-app
+$ magic-ws -p /path/to/package node my-app
 ```
 
-With the above command, anyone requiring "package" will instead get "my-package". `magic-ws` uses the
-`name` property in the `package.json` so it doesn't matter what the package's enclosing folder name
-is. The best part is your original package remains **completely unchanged**. It's trivial to compare
-the differences in behavior by just running your code with and without the `magic-ws` prefix. So,
-when might you want to use this?
+With the above command, anyone requiring "package" will get your custom version
+found at `/path/to/package` instead the one it would normally find in `node_modules`.
+Your app's folder structure remains **completely unchanged**, so it's trivial to 
+compare the differences in behavior by just running your code with and without the
+`magic-ws` command.
 
 ## Swap in your own fork when debugging a dependency
 
-Have you ever found a bug in a dependency and wanted to either debug it or fix it? Lerna won’t be
-helpful here unless the dependency is part of your mono-repo, and most other solutions
-involve actually mutating your node_modules folder with npm-link, or worse, throwing up your hands 
-and editing the files in `node_modules` directly. **Don't do that!** `magic-ws` makes doing things
-the right way just as easy. Just clone the module and point to it:
-
+Have you ever found a bug in a dependency and wanted to either debug it or fix it?
+Most solutions involve manually mutating your project with npm-link, or worse, 
+throwing up your hands and editing the files in `node_modules` directly.
+**Don't do that!** `magic-ws` makes doing things the right way just as easy.
+Just clone the module and point to it:
 
 ```bash
 $ git clone git://github.com/third-party/buggy-package /path/to/buggy-package
 $ magic-ws -p /path/to/buggy-package node my-app
 ```
+
+`magic-ws` uses the `name` property in the `package.json` so it doesn't actually
+matter what the package's enclosing folder name is.
 
 ## Solve the annoying requiring yourself conundrum when testing
 
