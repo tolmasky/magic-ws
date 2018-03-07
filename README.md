@@ -17,20 +17,20 @@ $ npm install magic-ws -g
 The fundamental primitive in `magic-ws` is the package hot-swap:
 
 ```bash
-# /path/to/my-package will be used in place of package in my-app
 $ magic-ws -p /path/to/my-package node my-app
 ```
 
-`magic-ws` uses the `name` property in the `package.json` so it doesn't matter what the package's
-enclosing folder name is. The best part is, your original package remains **completely unchanged**.
-It's trivial to compare the differences in behavior by just running your code with and without
-the `magic-ws` prefix. So, when might you want to use this?
+With the above command, anyone requiring "package" will instead get "my-package". `magic-ws` uses the
+`name` property in the `package.json` so it doesn't matter what the package's enclosing folder name
+is. The best part is your original package remains **completely unchanged**. It's trivial to compare
+the differences in behavior by just running your code with and without the `magic-ws` prefix. So,
+when might you want to use this?
 
 ## Swap in your own fork when debugging a dependency
 
 Have you ever found a bug in a dependency and wanted to either debug it or fix it? Lerna won’t be
 helpful here unless the dependency is part of your mono-repo, and most other solutions
-involve actually mutating your node_modules folder with npm-link or worse, throwing up your hands 
+involve actually mutating your node_modules folder with npm-link, or worse, throwing up your hands 
 and editing the files in `node_modules` directly. **Don't do that!** `magic-ws` makes doing things
 the right way just as easy. Just clone the module and point to it:
 
@@ -42,15 +42,17 @@ $ magic-ws -p /path/to/buggy-package node my-app
 
 ## Solve the annoying requiring yourself conundrum when testing
 
-Yup, you can just "hot-swap" in yourself so that tests can just do `require("my-package")` instead of
-`require("../../..")`. You can make things even easier by putting `magic-ws tests/` straight into
-your `package.json` so `npm test` just works.
+Yup, you can just "hot-swap" in yourself so that tests can do `require("my-package")` instead of
+`require("../../..")`:
 
 
 ```bash
-# Just use . (ourselves) for the package.
+# Make ourselves (.) available to tests.
 $ magic-ws -p . npm test
 ```
+
+You can make things even easier by putting `magic-ws node tests/` straight into your `package.json`
+so `npm test` just works.
 
 ## Hot-swap in mocks for your tests
 
@@ -66,8 +68,8 @@ match in the `package.json` and that's all there is to it.
 
 ## Create Lerna-like Workspaces without the configuration
 
-As you probably picked up above, you can use globs to easily swap in entire collections of packages.
-But we also provide the `-w` (or `--workspace`) flag to make this use case more explicit:
+You can use globs to easily swap in entire collections of packages, but we also provide the `-w` 
+(or `--workspace`) flag to make this use case more explicit:
 
 ```bash
 $ magic-ws -w ./my-mono-repo ./my-mono-repo/main-app
