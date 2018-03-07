@@ -13,7 +13,7 @@
   "repository" : {
     "type" : "git",
     "url" : "https://github.com/runkitdev/magic-ws.git"
-  }
+  },
   "dependencies": {
     "babel-core": "^6.26.0",
     "commander": "^2.14.1",
