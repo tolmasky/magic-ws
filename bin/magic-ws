@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# Our goal is to determine where this script is so we can then locate our custom
+# node. Unfortunately, doing this reliably and POSIX-compliantly seems to be a
+# very hard problem. The below is taken from nvm's strategy
+# (https://github.com/creationix/nvm/blob/master/nvm.sh), and then modified to
+# support the fact that we are a symlink.
+
 MAGIC_WS_PATH="$_"
 
 magic_ws_has() {
@@ -49,6 +55,8 @@ export MAGIC_WS_BOOTSTRAP_PATH
 
 MAGIC_WS_REAL_NODE=`which node` export MAGIC_WS_REAL_NODE
 PATH=${MAGIC_WS_NODE_SEARCH_PATH}:${PATH} export PATH
+
+# We serialize the args we support, and place them in an environment variable.
 
 MAGIC_WS_BOOTSTRAP_ARGS=""
 
