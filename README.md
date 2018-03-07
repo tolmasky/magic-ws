@@ -40,7 +40,7 @@ $ magic-ws -p /path/to/buggy-package node my-app
 ```
 
 `magic-ws` uses the `name` property in the `package.json` so it doesn't actually
-matter what the package's enclosing folder name is.
+matter what the replacement package's enclosing folder name is.
 
 ## Solve the annoying requiring yourself conundrum when testing
 
