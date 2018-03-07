@@ -1,17 +1,26 @@
 {
   "name": "magic-ws",
   "version": "1.0.0",
-  "description": "Magic Workspace allows you to treat packages in a folder as in node_modules, and automatically babel-registers.",
+  "description": "Magic Workspaces are a dynamic and configuration-free way of easily linking packages together.",
   "main": "magic-ws.js",
+  "bin": "./bin/magic-ws",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["workspace", "workspaces", "hot-swap", "hot swap", "modules"],
+  "author": "Francisco Ryan Tolmasky I <tolmasky@gmail.com>",
   "license": "MIT",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/runkitdev/magic-ws.git"
+  }
   "dependencies": {
     "babel-core": "^6.26.0",
     "commander": "^2.14.1",
-    "fast-glob": "^2.1.0"
+    "fast-glob": "^2.1.0",
+    "is-glob": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=4.0.0"
   }
 }
