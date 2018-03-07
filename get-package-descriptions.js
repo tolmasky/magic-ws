@@ -1,7 +1,6 @@
 var fs = require("fs");
 var path = require("path");
 var cwd = process.cwd();
-var globSync = require("fast-glob").sync;
 var isGlob = require("is-glob");
 
 
@@ -33,7 +32,7 @@ function pipe()
     {
         var index = 0;
         var count = fs.length;
-        
+
         for (; index < count; ++index)
             input = fs[index](input);
 
@@ -64,6 +63,7 @@ function glob(justPackages)
         if (!isGlob(pattern))
             return [path.resolve(cwd, pattern)];
 
+        var globSync = require("fast-glob").sync;
         var options = { absolute: true, onlyDirectories: true };
         var results = globSync(pattern, options);
 
