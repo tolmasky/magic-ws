@@ -97,3 +97,9 @@ This means you can run **any** script that eventually calls into node and the sw
 why the `npm` example above worked). Additionally, if the node process `exec`s, `spawn`s, and `fork`s, those
 too will keep the hot-swaps. Again, all this happens without actually mutating your code, so you could for
 example run your code's test suite normally and with `magic-ws` in parallel.
+
+## Support: Node 4 and Up
+
+The only caveat is that in specificaly in Node 4 you can't use magic-ws for the node REPL. As of Node 5 this
+works fine however. If there is a lot of desire for this feature it can be made to work. `magic-ws` can also
+probably be made to work in Node 0.10.
