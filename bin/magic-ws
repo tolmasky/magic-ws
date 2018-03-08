@@ -46,10 +46,10 @@ fi
 unset MAGIC_WS_PATH 2> /dev/null
 
 # SEARCH_PATH is where our node lives.
-MAGIC_WS_NODE_SEARCH_PATH=${MAGIC_WS_DIR}/helpers
+MAGIC_WS_NODE_SEARCH_PATH="${MAGIC_WS_DIR}/helpers"
 
 # BOOTSTRAP_PATH
-MAGIC_WS_BOOTSTRAP_PATH=$(dirname "$MAGIC_WS_DIR")/magic-ws.js
+MAGIC_WS_BOOTSTRAP_PATH="$(dirname "$MAGIC_WS_DIR")/magic-ws.js"
 
 export MAGIC_WS_BOOTSTRAP_PATH
 
