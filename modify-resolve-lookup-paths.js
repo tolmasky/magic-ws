@@ -1,5 +1,4 @@
 var Module = require("module");
-var oldResolveLookupPaths = Module._resolveLookupPaths;
 
 var fs = require("fs");
 var path = require("path");
@@ -14,6 +13,7 @@ var spawnSync = require("child_process").spawnSync;
 // FIXME: Should we *only* climb into known packages?
 module.exports = function modifyResolveLookupPaths(packages)
 {
+    var oldResolveLookupPaths = Module._resolveLookupPaths;
     var mappings = getPackageMappings(packages);
 
     Module._resolveLookupPaths = function(request, parent, newReturn)
