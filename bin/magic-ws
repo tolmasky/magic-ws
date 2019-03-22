@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Our goal is to determine where this script is so we can then locate our custom
 # node. Unfortunately, doing this reliably and POSIX-compliantly seems to be a
@@ -89,4 +89,8 @@ done
 
 export MAGIC_WS_BOOTSTRAP_ARGS
 
-$@
+# $@ contains the remaining arguments (ie, the argv to execute node).
+# Wrapping in quotes prevents $@ from being reinterpreted, which would (among
+# other things) cause bash to re-split the argument list at spaces, breaking
+# arguments containing spaces into multiple arguments.
+"$@"
