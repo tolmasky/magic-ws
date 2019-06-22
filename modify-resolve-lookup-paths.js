@@ -3,7 +3,7 @@ var Module = require("module");
 var fs = require("fs");
 var path = require("path");
 var spawnSync = require("child_process").spawnSync;
-
+var implicitNewReturn = parseInt(process.versions.node.split(".")[0], 10) >= 12;
 
 // We are modifying the lookup paths to behave as such:
 // 0th:             [WORKSPACE] - These are overriden packages.
@@ -37,7 +37,7 @@ module.exports = function modifyResolveLookupPaths(packages)
             parent === process.mainModule ? [] :
             oldResolveLookupPaths.apply(this, [request, process.mainModule, newReturn]);
 
-        if (newReturn)
+        if (implicitNewReturn || newReturn)
             return workspaceResult.concat(result || []).concat(rootResult);
 
         return [result[0], workspaceResult.concat(result[1]).concat(rootResult[1])];
