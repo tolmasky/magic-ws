@@ -1,1 +1,4 @@
-${MAGIC_WS_REAL_NODE} -r ${MAGIC_WS_BOOTSTRAP_PATH} $@
+#!/bin/bash
+# $@ must be quoted to preserve whitespace in arguments.
+# cf final line of magic-ws
+${MAGIC_WS_REAL_NODE} -r ${MAGIC_WS_BOOTSTRAP_PATH} "$@"
