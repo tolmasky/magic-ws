@@ -1,6 +1,6 @@
 {
   "name": "magic-ws",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Magic Workspaces are a dynamic and configuration-free way of easily linking packages together.",
   "main": "magic-ws.js",
   "bin": "./bin/magic-ws",
