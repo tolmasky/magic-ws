@@ -1,1 +1,4 @@
-${MAGIC_WS_REAL_NODE} -r ${MAGIC_WS_BOOTSTRAP_PATH} $@
+#!/usr/bin/env bash
+
+# We quote this to keep whitespace.
+${MAGIC_WS_REAL_NODE} -r ${MAGIC_WS_BOOTSTRAP_PATH} "$@"

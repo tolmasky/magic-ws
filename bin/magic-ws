@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Our goal is to determine where this script is so we can then locate our custom
 # node. Unfortunately, doing this reliably and POSIX-compliantly seems to be a
@@ -60,7 +60,7 @@ PATH=${MAGIC_WS_NODE_SEARCH_PATH}:${PATH} export PATH
 
 MAGIC_WS_BOOTSTRAP_ARGS=""
 
-while (( "$#" )); do
+while [ $# -gt 0 ]; do
 
     if [ $1 = "-p" -o $1 = "--package" -o $1 = "-w" -o $1 = "--workspace" ]; then
 
@@ -89,4 +89,4 @@ done
 
 export MAGIC_WS_BOOTSTRAP_ARGS
 
-$@
+"$@"
