@@ -17,7 +17,7 @@
   "dependencies": {
     "babel-core": "^6.26.0",
     "commander": "^2.14.1",
-    "fast-glob": "^2.1.0",
+    "fast-glob": "^3.2.12",
     "is-glob": "^4.0.0"
   },
   "engines": {
